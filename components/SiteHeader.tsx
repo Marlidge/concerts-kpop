@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/", label: "Accueil" },
   { href: "/concerts", label: "Concerts" },
+  { href: "/calendrier", label: "Calendrier" },
   { href: "/mes-artistes", label: "Mes artistes" },
 ];
 
