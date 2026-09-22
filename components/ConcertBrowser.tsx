@@ -13,12 +13,15 @@
  * léger et rapide.
  */
 
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ConcertCard } from "@/components/ConcertCard";
 import { useFavorites } from "@/components/useFavorites";
 import {
   filterConcerts,
+  filtersFromParams,
+  filtersToQuery,
   getCityFacets,
   getMonthFacets,
   hasActiveFilters,
@@ -59,13 +62,51 @@ type Props = {
 };
 
 export function ConcertBrowser({ concerts, artists }: Props) {
-  const [filters, setFilters] = useState<ConcertFilters>(NO_FILTERS);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const { favorites } = useFavorites();
 
+  // L'URL est la source de vérité des filtres : plus aucun état à tenir
+  // en double, et l'adresse reste partageable à tout instant.
+  const filters = useMemo(
+    () => filtersFromParams(searchParams),
+    [searchParams],
+  );
+
+  const applyFilters = useCallback(
+    (next: ConcertFilters) => {
+      const query = filtersToQuery(next);
+      // replace plutôt que push : chaque clic sur un filtre ne doit pas
+      // ajouter une entrée dans l'historique du navigateur.
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
+    },
+    [pathname, router],
+  );
+
   /** Modifie un seul filtre sans effacer les autres : ils se combinent. */
-  function update(patch: Partial<ConcertFilters>) {
-    setFilters((current) => ({ ...current, ...patch }));
-  }
+  const update = useCallback(
+    (patch: Partial<ConcertFilters>) => {
+      applyFilters({ ...filters, ...patch });
+    },
+    [applyFilters, filters],
+  );
+
+  /**
+   * La recherche textuelle garde un état local, contrairement aux autres
+   * filtres : écrire dans l'URL à chaque lettre provoquerait une
+   * navigation par frappe. On attend 350 ms de silence avant d'y toucher.
+   */
+  const [searchInput, setSearchInput] = useState(filters.search);
+
+  useEffect(() => {
+    if (searchInput === filters.search) return;
+
+    const timer = setTimeout(() => update({ search: searchInput }), 350);
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.search, update]);
 
   // useMemo évite de tout recalculer à chaque frappe si rien n'a changé.
   const artistsById = useMemo(
@@ -92,8 +133,8 @@ export function ConcertBrowser({ concerts, artists }: Props) {
           <input
             id="search"
             type="search"
-            value={filters.search}
-            onChange={(event) => update({ search: event.target.value })}
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
             placeholder="Artiste, ville, salle…"
             className="w-full rounded-full border border-border bg-surface py-3 pl-11 pr-4 text-sm transition placeholder:text-subtle focus:border-primary focus:outline-none"
           />
@@ -181,7 +222,10 @@ export function ConcertBrowser({ concerts, artists }: Props) {
           {isFiltered && (
             <button
               type="button"
-              onClick={() => setFilters(NO_FILTERS)}
+              onClick={() => {
+                setSearchInput("");
+                applyFilters(NO_FILTERS);
+              }}
               className="rounded-full px-3 py-2 text-sm text-subtle underline-offset-4 transition hover:text-foreground hover:underline"
             >
               Réinitialiser
@@ -206,7 +250,10 @@ export function ConcertBrowser({ concerts, artists }: Props) {
           </p>
           <button
             type="button"
-            onClick={() => setFilters(NO_FILTERS)}
+            onClick={() => {
+              setSearchInput("");
+              applyFilters(NO_FILTERS);
+            }}
             className="mt-4 rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary transition hover:bg-primary-hover"
           >
             Effacer les filtres

@@ -162,3 +162,51 @@ export function getMonthFacets(concerts: Concert[]): Facet[] {
       };
     });
 }
+
+/* ------------------------------------------------------------------
+   Filtres ↔ URL (votre §14).
+
+   Mettre les filtres dans l'adresse a trois effets :
+   partager un lien "K-pop à Paris en octobre", revenir en arrière avec
+   le bouton du navigateur, et retrouver ses filtres en rechargeant.
+
+   Les noms de paramètres sont en français parce qu'ils sont visibles :
+   /concerts?genre=kpop&ville=Paris&mois=2026-10
+   ------------------------------------------------------------------ */
+
+/** Minimum attendu d'un jeu de paramètres, pour rester testable sans navigateur. */
+type ParamsLike = { get(key: string): string | null };
+
+const MONTH_PATTERN = /^\d{4}-\d{2}$/;
+
+export function filtersFromParams(params: ParamsLike): ConcertFilters {
+  const genre = params.get("genre");
+  const month = params.get("mois");
+
+  return {
+    search: params.get("q") ?? "",
+    // On ne fait pas confiance à l'URL : elle se modifie à la main.
+    genre: genre === "kpop" || genre === "jpop" ? genre : "all",
+    city: params.get("ville") ?? "all",
+    month: month && MONTH_PATTERN.test(month) ? month : "all",
+    onlyOnSale: params.get("billetterie") === "ouverte",
+    onlyFavorites: params.get("favoris") === "1",
+  };
+}
+
+/**
+ * L'opération inverse. Les filtres inactifs sont omis : une adresse sans
+ * filtre reste /concerts, propre et lisible.
+ */
+export function filtersToQuery(filters: ConcertFilters): string {
+  const params = new URLSearchParams();
+
+  if (filters.search.trim()) params.set("q", filters.search.trim());
+  if (filters.genre !== "all") params.set("genre", filters.genre);
+  if (filters.city !== "all") params.set("ville", filters.city);
+  if (filters.month !== "all") params.set("mois", filters.month);
+  if (filters.onlyOnSale) params.set("billetterie", "ouverte");
+  if (filters.onlyFavorites) params.set("favoris", "1");
+
+  return params.toString();
+}

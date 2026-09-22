@@ -67,3 +67,40 @@ export function getConcertsByArtist(artistId: string): {
     past: all.filter((concert) => concert.date < today).reverse(),
   };
 }
+
+/** Une ville de la base, avec sa région et son nombre de concerts à venir. */
+export type CityStat = {
+  city: string;
+  region?: string;
+  count: number;
+};
+
+/**
+ * Les villes où des concerts sont annoncés (votre §18).
+ *
+ * Rien n'est codé en dur : la liste naît des données. Une ville sans
+ * concert à venir disparaît d'elle-même, une nouvelle apparaît seule.
+ */
+export function getCityStats(): CityStat[] {
+  const stats = new Map<string, CityStat>();
+
+  for (const concert of getUpcomingConcerts()) {
+    const existing = stats.get(concert.city);
+    if (existing) {
+      existing.count += 1;
+      // Une ville peut arriver sans région selon la source : on garde
+      // la première information disponible.
+      existing.region ??= concert.region;
+    } else {
+      stats.set(concert.city, {
+        city: concert.city,
+        region: concert.region,
+        count: 1,
+      });
+    }
+  }
+
+  return [...stats.values()].sort(
+    (a, b) => b.count - a.count || a.city.localeCompare(b.city, "fr"),
+  );
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { ConcertBrowser } from "@/components/ConcertBrowser";
 import { getAllArtists, getUpcomingConcerts } from "@/lib/data";
@@ -26,8 +27,16 @@ export default function ConcertsPage() {
         </p>
       </header>
 
+      {/* ConcertBrowser lit l'adresse de la page. Next.js demande alors
+          un <Suspense> : sans lui, la page ne peut plus être préparée à
+          l'avance et la compilation échoue — alors même que tout
+          fonctionne en développement. */}
       <div className="mt-10">
-        <ConcertBrowser concerts={concerts} artists={artists} />
+        <Suspense
+          fallback={<p className="text-sm text-subtle">Chargement…</p>}
+        >
+          <ConcertBrowser concerts={concerts} artists={artists} />
+        </Suspense>
       </div>
     </main>
   );
