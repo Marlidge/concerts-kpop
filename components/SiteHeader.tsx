@@ -16,6 +16,7 @@ const LINKS = [
   { href: "/concerts", label: "Concerts" },
   { href: "/calendrier", label: "Calendrier" },
   { href: "/villes", label: "Villes" },
+  { href: "/statistiques", label: "Statistiques" },
   { href: "/mes-artistes", label: "Mes artistes" },
 ];
 
