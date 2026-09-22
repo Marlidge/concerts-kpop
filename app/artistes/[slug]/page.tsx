@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ConcertCard } from "@/components/ConcertCard";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { getArtistBySlug, getConcertsByArtist } from "@/lib/data";
 import { countryLabel, formatDate } from "@/lib/format";
 
@@ -96,11 +97,14 @@ export default async function ArtistPage({
                 {artist.subGenre}
               </span>
             )}
-            {artist.isFavorite && (
-              <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-medium text-primary">
-                Dans mes artistes
-              </span>
-            )}
+          </div>
+
+          <div className="mt-4">
+            <FavoriteButton
+              artistId={artist.id}
+              artistName={artist.name}
+              variant="full"
+            />
           </div>
         </div>
       </header>

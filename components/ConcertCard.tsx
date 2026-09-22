@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { FavoriteButton } from "@/components/FavoriteButton";
 import {
   formatDate,
   formatOpening,
@@ -131,11 +132,12 @@ export function ConcertCard({ concert, artist }: Props) {
           </div>
         </div>
 
-        <h3
-          className={`text-xl font-semibold leading-tight ${
-            isKpop ? "text-kpop-strong" : "text-jpop-strong"
-          }`}
-        >
+        <div className="flex items-end justify-between gap-2">
+          <h3
+            className={`text-xl font-semibold leading-tight ${
+              isKpop ? "text-kpop-strong" : "text-jpop-strong"
+            }`}
+          >
           {/* Seul le nom est cliquable, pas la carte entière : celle-ci
               contient déjà un lien vers la billetterie, et deux liens
               imbriqués seraient invalides autant qu'imprévisibles. */}
@@ -149,7 +151,14 @@ export function ConcertCard({ concert, artist }: Props) {
           ) : (
             "Artiste inconnu"
           )}
-        </h3>
+          </h3>
+
+          {/* Un composant client à l'intérieur d'un composant serveur :
+              seul ce bouton a besoin du navigateur, pas toute la carte. */}
+          {artist && (
+            <FavoriteButton artistId={artist.id} artistName={artist.name} />
+          )}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-4 p-5">

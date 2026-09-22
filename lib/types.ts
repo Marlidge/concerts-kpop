@@ -43,8 +43,6 @@ export type Artist = {
   /** Précision libre : "idol", "j-rock", "ballad"... */
   subGenre?: string;
   imageUrl?: string;
-  /** Géré par vous depuis l'interface, pas par les sources de données. */
-  isFavorite: boolean;
 };
 
 /**

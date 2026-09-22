@@ -16,6 +16,7 @@
 import { useMemo, useState } from "react";
 
 import { ConcertCard } from "@/components/ConcertCard";
+import { useFavorites } from "@/components/useFavorites";
 import {
   filterConcerts,
   getCityFacets,
@@ -59,6 +60,7 @@ type Props = {
 
 export function ConcertBrowser({ concerts, artists }: Props) {
   const [filters, setFilters] = useState<ConcertFilters>(NO_FILTERS);
+  const { favorites } = useFavorites();
 
   /** Modifie un seul filtre sans effacer les autres : ils se combinent. */
   function update(patch: Partial<ConcertFilters>) {
@@ -73,8 +75,8 @@ export function ConcertBrowser({ concerts, artists }: Props) {
   const cities = useMemo(() => getCityFacets(concerts), [concerts]);
   const months = useMemo(() => getMonthFacets(concerts), [concerts]);
   const results = useMemo(
-    () => filterConcerts(concerts, artists, filters),
-    [concerts, artists, filters],
+    () => filterConcerts(concerts, artists, filters, favorites),
+    [concerts, artists, filters, favorites],
   );
 
   const isFiltered = hasActiveFilters(filters);
@@ -161,6 +163,19 @@ export function ConcertBrowser({ concerts, artists }: Props) {
             }`}
           >
             Billetterie ouverte
+          </button>
+
+          <button
+            type="button"
+            onClick={() => update({ onlyFavorites: !filters.onlyFavorites })}
+            aria-pressed={filters.onlyFavorites}
+            className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+              filters.onlyFavorites
+                ? "border-primary bg-primary text-on-primary"
+                : "border-border bg-surface text-subtle hover:text-foreground"
+            }`}
+          >
+            Mes artistes
           </button>
 
           {isFiltered && (

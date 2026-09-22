@@ -23,7 +23,6 @@ export const artists: Artist[] = [
     country: "KR",
     genre: "kpop",
     subGenre: "idol",
-    isFavorite: true,
   },
   {
     id: "a2",
@@ -32,7 +31,6 @@ export const artists: Artist[] = [
     country: "KR",
     genre: "kpop",
     subGenre: "idol",
-    isFavorite: true,
   },
   {
     id: "a3",
@@ -41,7 +39,6 @@ export const artists: Artist[] = [
     country: "KR",
     genre: "kpop",
     subGenre: "idol",
-    isFavorite: false,
   },
   {
     id: "a4",
@@ -50,7 +47,6 @@ export const artists: Artist[] = [
     country: "JP",
     genre: "jpop",
     subGenre: "kawaii metal",
-    isFavorite: false,
   },
   {
     id: "a5",
@@ -59,7 +55,6 @@ export const artists: Artist[] = [
     country: "JP",
     genre: "jpop",
     subGenre: "j-rock",
-    isFavorite: true,
   },
   {
     id: "a6",
@@ -68,7 +63,6 @@ export const artists: Artist[] = [
     country: "JP",
     genre: "jpop",
     subGenre: "ballad",
-    isFavorite: false,
   },
 ];
 

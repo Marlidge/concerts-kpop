@@ -20,6 +20,8 @@ export type ConcertFilters = {
   month: string;
   /** Ne garder que les concerts dont la billetterie est ouverte. */
   onlyOnSale: boolean;
+  /** Ne garder que les concerts de mes artistes suivis. */
+  onlyFavorites: boolean;
 };
 
 export const NO_FILTERS: ConcertFilters = {
@@ -28,6 +30,7 @@ export const NO_FILTERS: ConcertFilters = {
   city: "all",
   month: "all",
   onlyOnSale: false,
+  onlyFavorites: false,
 };
 
 export function hasActiveFilters(filters: ConcertFilters): boolean {
@@ -36,7 +39,8 @@ export function hasActiveFilters(filters: ConcertFilters): boolean {
     filters.genre !== "all" ||
     filters.city !== "all" ||
     filters.month !== "all" ||
-    filters.onlyOnSale
+    filters.onlyOnSale ||
+    filters.onlyFavorites
   );
 }
 
@@ -53,7 +57,7 @@ export function normalize(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD") // sépare les lettres de leurs accents
-    .replace(/[̀-ͯ]/g, "") // puis retire les accents
+    .replace(/[\u0300-\u036f]/g, "") // puis retire les accents
     .trim();
 }
 
@@ -68,8 +72,11 @@ export function filterConcerts(
   concerts: Concert[],
   artists: Artist[],
   filters: ConcertFilters,
+  /** Identifiants des artistes suivis, nécessaires au filtre "mes artistes". */
+  favoriteArtistIds: string[] = [],
 ): Concert[] {
   const artistNames = new Map(artists.map((a) => [a.id, a.name]));
+  const favorites = new Set(favoriteArtistIds);
   const words = normalize(filters.search).split(/\s+/).filter(Boolean);
 
   return concerts.filter((concert) => {
@@ -85,6 +92,9 @@ export function filterConcerts(
       return false;
     }
     if (filters.onlyOnSale && concert.ticketStatus !== "on_sale") {
+      return false;
+    }
+    if (filters.onlyFavorites && !favorites.has(concert.artistId)) {
       return false;
     }
 
