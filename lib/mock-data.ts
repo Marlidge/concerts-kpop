@@ -93,6 +93,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/twice-paris",
     source: "mock",
     sourceId: "mock-c1",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -112,6 +113,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/stray-kids-lyon",
     source: "mock",
     sourceId: "mock-c2",
+    firstSeenAt: "2026-09-20T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -133,6 +135,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/one-ok-rock-toulouse",
     source: "mock",
     sourceId: "mock-c3",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -150,6 +153,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/babymetal-lille",
     source: "mock",
     sourceId: "mock-c4",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -168,6 +172,7 @@ export const concerts: Concert[] = [
     ticketStatus: "unknown",
     source: "mock",
     sourceId: "mock-c5",
+    firstSeenAt: "2026-09-21T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -188,6 +193,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/twice-bordeaux",
     source: "mock",
     sourceId: "mock-c6",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -207,6 +213,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/le-sserafim-marseille",
     source: "mock",
     sourceId: "mock-c7",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -225,6 +232,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/stray-kids-strasbourg",
     source: "mock",
     sourceId: "mock-c8",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -243,6 +251,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/babymetal-nantes",
     source: "mock",
     sourceId: "mock-c9",
+    firstSeenAt: "2026-09-22T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -264,6 +273,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/aimer-toulouse",
     source: "mock",
     sourceId: "mock-c10",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -284,6 +294,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/one-ok-rock-paris-2026",
     source: "mock",
     sourceId: "mock-c11",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 
@@ -303,6 +314,7 @@ export const concerts: Concert[] = [
     officialUrl: "https://example.com/billetterie/le-sserafim-paris-2026",
     source: "mock",
     sourceId: "mock-c12",
+    firstSeenAt: "2026-04-12T06:00:00Z",
     updatedAt: UPDATED_AT,
   },
 ];

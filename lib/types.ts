@@ -92,6 +92,12 @@ export type Concert = {
   source: string;
   /** Identifiant du concert chez cette source, clé de la déduplication. */
   sourceId: string;
+  /**
+   * Date à laquelle le site a découvert ce concert pour la première fois.
+   * C'est elle, et non la date du concert, qui décide du badge "Nouveau".
+   * Une fois écrite, elle ne change plus.
+   */
+  firstSeenAt?: string;
   /** Dernière actualisation, ex. "2026-09-22T06:00:00Z". */
   updatedAt: string;
 };
