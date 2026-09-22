@@ -1,8 +1,14 @@
+import Link from "next/link";
+
 import { ConcertCard } from "@/components/ConcertCard";
 import { getArtistById, getUpcomingConcerts } from "@/lib/data";
 
+/** L'accueil met en avant une sélection ; la page Concerts montre tout. */
+const HIGHLIGHT_COUNT = 6;
+
 export default function Home() {
-  const concerts = getUpcomingConcerts();
+  const concerts = getUpcomingConcerts(HIGHLIGHT_COUNT);
+  const total = getUpcomingConcerts().length;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
@@ -30,9 +36,12 @@ export default function Home() {
       <section className="mt-16">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-xl font-semibold">Prochains concerts</h2>
-          <p className="text-sm text-subtle">
-            {concerts.length} concert{concerts.length > 1 ? "s" : ""} à venir
-          </p>
+          <Link
+            href="/concerts"
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            Voir les {total} concerts
+          </Link>
         </div>
 
         {concerts.length === 0 ? (
