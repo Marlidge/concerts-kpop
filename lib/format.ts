@@ -78,3 +78,14 @@ export function isRecent(firstSeenAt?: string, days = 7): boolean {
   if (Number.isNaN(seen)) return false;
   return Date.now() - seen < days * 24 * 60 * 60 * 1000;
 }
+
+const regionNames = new Intl.DisplayNames(["fr"], { type: "region" });
+
+/** "KR" → "Corée du Sud". Renvoie le code tel quel s'il est inconnu. */
+export function countryLabel(code: string): string {
+  try {
+    return regionNames.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}

@@ -44,3 +44,26 @@ export function getUpcomingConcerts(limit?: number): Concert[] {
   const upcoming = getAllConcerts().filter((concert) => concert.date >= today);
   return limit ? upcoming.slice(0, limit) : upcoming;
 }
+
+export function getArtistBySlug(slug: string): Artist | undefined {
+  return artists.find((artist) => artist.slug === slug);
+}
+
+/**
+ * Les concerts d'un artiste, séparés en deux (votre §15).
+ *
+ * Les concerts passés sont rendus du plus récent au plus ancien : c'est
+ * l'ordre dans lequel on a envie de les lire.
+ */
+export function getConcertsByArtist(artistId: string): {
+  upcoming: Concert[];
+  past: Concert[];
+} {
+  const today = todayISO();
+  const all = getAllConcerts().filter((concert) => concert.artistId === artistId);
+
+  return {
+    upcoming: all.filter((concert) => concert.date >= today),
+    past: all.filter((concert) => concert.date < today).reverse(),
+  };
+}

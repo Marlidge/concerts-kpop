@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   formatDate,
   formatOpening,
@@ -134,7 +136,19 @@ export function ConcertCard({ concert, artist }: Props) {
             isKpop ? "text-kpop-strong" : "text-jpop-strong"
           }`}
         >
-          {artist?.name ?? "Artiste inconnu"}
+          {/* Seul le nom est cliquable, pas la carte entière : celle-ci
+              contient déjà un lien vers la billetterie, et deux liens
+              imbriqués seraient invalides autant qu'imprévisibles. */}
+          {artist ? (
+            <Link
+              href={`/artistes/${artist.slug}`}
+              className="underline-offset-4 transition hover:underline"
+            >
+              {artist.name}
+            </Link>
+          ) : (
+            "Artiste inconnu"
+          )}
         </h3>
       </div>
 
