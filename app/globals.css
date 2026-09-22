@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
+/* ============================================================
+   PALETTE DU SITE — source de vérité unique des couleurs.
+   Changer une valeur ici la change partout dans l'application.
+   ============================================================ */
+
+/* ---- Mode clair (valeurs par défaut) ---- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fonds */
+  --background: #faf7f4; /* blanc cassé, légèrement chaud */
+  --surface: #ffffff; /* fond des cartes */
+  --muted: #f3eee9; /* zones secondaires, survols */
+  --border: #e9e1d9;
+
+  /* Textes */
+  --foreground: #2b2531; /* violet très sombre, plus doux qu'un noir pur */
+  --subtle: #6d6478; /* textes secondaires */
+
+  /* Couleur principale */
+  --primary: #6e52c0; /* violet doux */
+  --primary-hover: #5c42a8;
+  --primary-soft: #efe9fb; /* fond des badges et zones teintées */
+  --on-primary: #ffffff; /* texte posé sur la couleur principale */
+
+  /* Accents de genre : chaque genre a 3 variantes.
+     -        : la couleur pleine (pastilles, graphiques)
+     - -soft  : le fond très clair (badges)
+     - -strong: le texte posé sur ce fond (assez foncé pour rester lisible) */
+  --kpop: #d46a96;
+  --kpop-soft: #fbeaf1;
+  --kpop-strong: #a83f6e;
+
+  --jpop: #5b8fd6;
+  --jpop-soft: #e8f0fb;
+  --jpop-strong: #2d6ab5;
 }
 
+/* ---- Mode sombre ----
+   Deux blocs identiques, volontairement :
+   1) le premier suit le réglage système de la personne ;
+   2) le second servira au bouton clair/sombre manuel (étape 19),
+      qui posera simplement data-theme="dark" sur la page.
+   Le :not([data-theme="light"]) permet au choix manuel de
+   l'emporter sur le réglage système. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #14111b;
+    --surface: #1c1926;
+    --muted: #252131;
+    --border: #322d40;
+
+    --foreground: #f3f0f7;
+    --subtle: #a79fb3;
+
+    --primary: #a78bfa;
+    --primary-hover: #b9a2fb;
+    --primary-soft: #2a2140;
+    --on-primary: #1a1526;
+
+    --kpop: #e98cb4;
+    --kpop-soft: #3a2430;
+    --kpop-strong: #f3b3cd;
+
+    --jpop: #7fb0ea;
+    --jpop-soft: #1e2c3f;
+    --jpop-strong: #a8ccf5;
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #14111b;
+  --surface: #1c1926;
+  --muted: #252131;
+  --border: #322d40;
+
+  --foreground: #f3f0f7;
+  --subtle: #a79fb3;
+
+  --primary: #a78bfa;
+  --primary-hover: #b9a2fb;
+  --primary-soft: #2a2140;
+  --on-primary: #1a1526;
+
+  --kpop: #e98cb4;
+  --kpop-soft: #3a2430;
+  --kpop-strong: #f3b3cd;
+
+  --jpop: #7fb0ea;
+  --jpop-soft: #1e2c3f;
+  --jpop-strong: #a8ccf5;
+}
+
+/* ============================================================
+   Branchement de la palette sur Tailwind.
+   Chaque ligne crée des classes utilitaires : --color-surface
+   donne bg-surface, text-surface, border-surface, etc.
+   ============================================================ */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
   --color-foreground: var(--foreground);
+  --color-subtle: var(--subtle);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+
+  --color-kpop: var(--kpop);
+  --color-kpop-soft: var(--kpop-soft);
+  --color-kpop-strong: var(--kpop-strong);
+
+  --color-jpop: var(--jpop);
+  --color-jpop-soft: var(--jpop-soft);
+  --color-jpop-strong: var(--jpop-strong);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Arrondis et ombres, eux aussi centralisés :
+     rounded-card et shadow-soft seront utilisés par toutes les cartes. */
+  --radius-card: 1.25rem;
+  --shadow-soft:
+    0 1px 2px rgb(43 37 49 / 0.05), 0 8px 24px -8px rgb(43 37 49 / 0.12);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
