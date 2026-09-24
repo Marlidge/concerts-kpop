@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { getAllArtists, getUpcomingConcerts } from "@/lib/data";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -37,9 +38,26 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
+      // Le script ci-dessous pose data-theme sur cette balise avant
+      // que React ne prenne le relais. Sans suppressHydrationWarning
+      // ICI (pas sur le script : c'est <html> que l'attribut modifie),
+      // React comparerait le HTML reçu du serveur — qui ne connaît pas
+      // votre choix de thème, stocké dans le navigateur — à ce que le
+      // script vient de poser, verrait une différence, et le
+      // signalerait comme une erreur alors que c'est voulu.
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        {/* Balise <script> ordinaire plutôt que le composant Script de
+            Next.js : ce dernier ("beforeInteractive") provoquait une
+            erreur d'hydratation dans cette version (React 19 +
+            Turbopack) au lieu d'être simplement déplacé dans <head>
+            comme sa documentation le promet. Une balise native, placée
+            en tout premier dans <body>, obtient le même résultat :
+            elle s'exécute pendant que le navigateur lit encore la
+            page, avant tout affichage — sans dépendre de ce mécanisme. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <SiteHeader concerts={concerts} artists={artists} />
         {children}
       </body>
