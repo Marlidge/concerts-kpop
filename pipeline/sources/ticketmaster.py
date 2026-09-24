@@ -86,6 +86,13 @@ def search_events(
                 "classificationName": "music",
                 "size": page_size,
                 "sort": "date,asc",
+                # Sans ce paramètre, l'API ne renvoie que les événements
+                # indexés en anglais — ce qui exclut la quasi-totalité
+                # des concerts français. Trouvé en déboguant des résultats
+                # à zéro alors que countryCode=FR seul, sans mot-clé,
+                # révélait bien 85 salles françaises dans la base : les
+                # données existent, seul le filtre de langue les cachait.
+                "locale": "*",
             },
         )
     except httpx.RequestError as exc:

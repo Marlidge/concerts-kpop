@@ -38,7 +38,7 @@ yarn-error.log*
 pipeline/.venv/
 pipeline/__pycache__/
 pipeline/**/__pycache__/
-pipeline/data/*.json
+pipeline/data/**/*.json
 !pipeline/data/.gitkeep
 
 # vercel
