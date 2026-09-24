@@ -39,6 +39,7 @@ pipeline/.venv/
 pipeline/__pycache__/
 pipeline/**/__pycache__/
 pipeline/data/**/*.json
+pipeline/data/*.db
 !pipeline/data/.gitkeep
 
 # vercel
