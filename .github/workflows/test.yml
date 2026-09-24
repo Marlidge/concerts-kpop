@@ -1,0 +1,39 @@
+name: Tests du site
+
+# Contrairement à collect.yml (qui s'exécute sur un planning), celui-ci
+# se déclenche à chaque modification poussée sur main — le réflexe
+# classique : vérifier que rien n'est cassé avant que ça n'atteigne le
+# site déployé (votre §28).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier les types
+        run: npx tsc --noEmit
+
+      - name: Linter
+        run: npm run lint
+
+      - name: Lancer les tests
+        run: npm test
+
+      - name: Vérifier que le site se construit
+        run: npm run build
