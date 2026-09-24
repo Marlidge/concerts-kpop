@@ -38,8 +38,13 @@ yarn-error.log*
 pipeline/.venv/
 pipeline/__pycache__/
 pipeline/**/__pycache__/
-pipeline/data/**/*.json
-pipeline/data/*.db
+pipeline/.pytest_cache/
+# Les réponses brutes des sources restent locales : re-téléchargeables,
+# pas du code, pas une donnée qu'on veut faire grossir l'historique Git.
+pipeline/data/raw/**/*.json
+# concerts.db, lui, EST versionné (étape 17) : c'est le robot
+# GitHub Actions qui le tient à jour à chaque collecte automatique,
+# faute d'une base hébergée pour l'instant.
 !pipeline/data/.gitkeep
 
 # vercel

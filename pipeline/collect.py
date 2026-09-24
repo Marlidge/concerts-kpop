@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -99,6 +100,12 @@ def collect_raw(conn, api_key: str) -> list[NormalizedConcert]:
 def main() -> None:
     api_key = load_api_key()
 
+    # Capturé AVANT le moindre appel réseau : tout concert touché par
+    # cette collecte aura un updated_at postérieur à cet instant, ce qui
+    # permet ensuite de repérer ceux qui n'ont PAS été touchés (voir
+    # mark_stale_concerts).
+    run_started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+
     with db.connect() as conn:
         raw = collect_raw(conn, api_key)
         deduped = deduplicate(raw)
@@ -109,12 +116,18 @@ def main() -> None:
             created += was_created
             updated += not was_created
 
+        gone_stale = db.mark_stale_concerts(
+            conn, source="ticketmaster", run_started_at=run_started_at
+        )
+
     merged_away = len(raw) - len(deduped)
 
     print("\n" + "─" * 44)
     print(f"{len(raw)} événement(s) brut(s) → {len(deduped)} concert(s) unique(s)", end="")
     print(f" ({merged_away} fusionné(s))" if merged_away else "")
     print(f"{created} concert(s) ajouté(s), {updated} mis à jour.")
+    if gone_stale:
+        print(f"{gone_stale} concert(s) plus confirmé(s) par la source → statut repassé à \"unknown\".")
     print(f"Base : {db.DB_PATH.relative_to(PROJECT_ROOT)}")
 
 

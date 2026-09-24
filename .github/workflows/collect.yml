@@ -1,0 +1,57 @@
+name: Collecte des concerts
+
+# Votre §21 : actualisation planifiée + bouton manuel.
+#
+# "workflow_dispatch" fait apparaître un bouton "Run workflow" dans
+# l'onglet Actions du dépôt sur GitHub — c'est le bouton "actualiser
+# maintenant" de votre §21, en attendant qu'il existe aussi sur le site.
+on:
+  schedule:
+    # 6h00 UTC chaque jour. Les concerts ne s'annoncent pas à la
+    # minute près : une fois par jour suffit largement, et reste loin
+    # des quotas gratuits de Ticketmaster (votre §21 : éviter les
+    # requêtes inutiles).
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+# Nécessaire pour que le robot puisse committer la base mise à jour à
+# la fin de l'exécution (voir la dernière étape).
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Installer les dépendances du pipeline
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Lancer les tests
+        # Si un test échoue, on s'arrête là plutôt que de risquer
+        # d'écrire des données mal formées dans la base (votre §23).
+        run: pytest pipeline
+
+      - name: Collecter et normaliser les concerts
+        env:
+          TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
+        run: python pipeline/collect.py
+
+      - name: Enregistrer la base si elle a changé
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pipeline/data/concerts.db
+          if git diff --staged --quiet; then
+            echo "Rien de nouveau à enregistrer."
+          else
+            git commit -m "Actualisation automatique des concerts ($(date -u +%Y-%m-%d))"
+            git push
+          fi

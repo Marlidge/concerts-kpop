@@ -154,3 +154,37 @@ def upsert_concert(conn: sqlite3.Connection, concert: NormalizedConcert) -> tupl
         ),
     )
     return new_id, True
+
+
+def mark_stale_concerts(conn: sqlite3.Connection, *, source: str, run_started_at: str) -> int:
+    """
+    Marque "unknown" les concerts à venir de cette source qui n'ont pas
+    été confirmés par la collecte en cours (votre §21 : détecter les
+    changements importants).
+
+    On ne supprime jamais un concert : il reste visible dans
+    l'historique et les statistiques. Mais si la source ne le renvoie
+    plus, continuer à afficher "en vente" serait mentir — on repasse
+    donc son statut à "unknown" plutôt que d'inventer une raison
+    (annulé ? complet ? simple pépin de l'API ce jour-là ?) qu'on ne
+    connaît pas réellement (votre §23).
+
+    Les concerts déjà passés ne sont jamais touchés : leur statut n'a
+    plus d'effet sur ce que voit l'utilisateur.
+
+    Seuls "on_sale" et "upcoming" basculent : ce sont les statuts qui
+    laissent croire qu'on peut encore agir (réserver, attendre une
+    ouverture). "cancelled" et "sold_out" restent tels quels — ce sont
+    déjà des réponses, les effacer perdrait une information utile pour
+    rien.
+    """
+    cursor = conn.execute(
+        """UPDATE concerts
+           SET ticket_status = 'unknown'
+           WHERE source = ?
+             AND updated_at < ?
+             AND date >= date('now')
+             AND ticket_status IN ('on_sale', 'upcoming')""",
+        (source, run_started_at),
+    )
+    return cursor.rowcount
