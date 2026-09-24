@@ -7,7 +7,7 @@ httpx==0.28.1        # Requêtes HTTP vers les APIs. Comme "requests", mais
                       # gère nativement les délais d'attente et sera prêt
                       # le jour où le pipeline aura besoin d'async.
 
-python-dotenv==1.0.1  # Charge la clé d'API depuis un fichier .env.local
+python-dotenv==1.2.2   # Charge la clé d'API depuis un fichier .env.local
                        # au lieu de l'écrire dans le code (votre §24).
 
 truststore==0.10.4    # Fait vérifier les certificats HTTPS par le magasin
@@ -17,4 +17,4 @@ truststore==0.10.4    # Fait vérifier les certificats HTTPS par le magasin
                        # interceptent le trafic HTTPS avec leur propre
                        # certificat.
 
-pytest==8.4.2          # Tests automatisés (votre §28).
+pytest==9.0.3          # Tests automatisés (votre §28).
