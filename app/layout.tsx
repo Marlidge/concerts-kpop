@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { getAllArtists, getUpcomingConcerts } from "@/lib/data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,13 +28,19 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  // Chargé une fois ici (composant serveur) plutôt que dans chaque
+  // page : la cloche de notifications a besoin des mêmes données sur
+  // tout le site, elle vit dans l'en-tête commun à toutes les pages.
+  const concerts = getUpcomingConcerts();
+  const artists = getAllArtists();
+
   return (
     <html
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <SiteHeader />
+        <SiteHeader concerts={concerts} artists={artists} />
         {children}
       </body>
     </html>

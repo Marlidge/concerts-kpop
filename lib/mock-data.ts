@@ -68,6 +68,25 @@ export const artists: Artist[] = [
 
 const UPDATED_AT = "2026-09-22T06:00:00Z";
 
+/**
+ * Calculées par rapport à "maintenant" plutôt qu'écrites en dur : sans
+ * ça, la démonstration de la notification "billetterie bientôt
+ * ouverte" (moins de 48h) cesserait de fonctionner au fil des jours.
+ * Le reste des dates fictives du fichier reste volontairement fixe.
+ */
+function daysFromNowDate(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function daysFromNowDateTime(days: number, hour: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  d.setUTCHours(hour, 0, 0, 0);
+  return d.toISOString().slice(0, 16);
+}
+
 export const concerts: Concert[] = [
   // --- Cas standard : tout est renseigné, billetterie ouverte ---
   {
@@ -309,6 +328,28 @@ export const concerts: Concert[] = [
     source: "mock",
     sourceId: "mock-c12",
     firstSeenAt: "2026-04-12T06:00:00Z",
+    updatedAt: UPDATED_AT,
+  },
+
+  // --- Billetterie ouvrant dans moins de 48h : démontre la
+  // notification "bientôt ouverte" (§20). Dates calculées plutôt que
+  // fixes, voir le commentaire sur daysFromNowDate plus haut.
+  {
+    id: "c13",
+    artistId: "a2",
+    title: "Stray Kids — dominATE World Tour",
+    date: daysFromNowDate(120),
+    time: "20:00",
+    city: "Grenoble",
+    region: "Auvergne-Rhône-Alpes",
+    venue: "Summum",
+    genre: "kpop",
+    ticketStatus: "upcoming",
+    ticketsOpenAt: daysFromNowDateTime(1, 10),
+    officialUrl: "https://example.com/billetterie/stray-kids-grenoble",
+    source: "mock",
+    sourceId: "mock-c13",
+    firstSeenAt: daysFromNowDate(-2),
     updatedAt: UPDATED_AT,
   },
 ];
