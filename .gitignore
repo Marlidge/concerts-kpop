@@ -32,6 +32,14 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# pipeline Python (votre §6, §7)
+pipeline/.venv/
+pipeline/__pycache__/
+pipeline/**/__pycache__/
+pipeline/data/*.json
+!pipeline/data/.gitkeep
 
 # vercel
 .vercel

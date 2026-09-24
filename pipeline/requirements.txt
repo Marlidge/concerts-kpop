@@ -1,0 +1,18 @@
+# Dépendances du pipeline de collecte (votre §6, §7).
+#
+# Volontairement minimal pour cette étape : deux bibliothèques, chacune
+# pour une seule raison précise.
+
+httpx==0.28.1        # Requêtes HTTP vers les APIs. Comme "requests", mais
+                      # gère nativement les délais d'attente et sera prêt
+                      # le jour où le pipeline aura besoin d'async.
+
+python-dotenv==1.0.1  # Charge la clé d'API depuis un fichier .env.local
+                       # au lieu de l'écrire dans le code (votre §24).
+
+truststore==0.10.4    # Fait vérifier les certificats HTTPS par le magasin
+                       # de confiance du système plutôt que par le sien.
+                       # Nécessaire derrière certains pare-feux, proxys
+                       # d'entreprise ou d'établissement scolaire, qui
+                       # interceptent le trafic HTTPS avec leur propre
+                       # certificat.
