@@ -16,3 +16,5 @@ truststore==0.10.4    # Fait vérifier les certificats HTTPS par le magasin
                        # d'entreprise ou d'établissement scolaire, qui
                        # interceptent le trafic HTTPS avec leur propre
                        # certificat.
+
+pytest==8.4.2          # Tests automatisés (votre §28).

@@ -1,10 +1,18 @@
 """
-Le pipeline complet : Ticketmaster → normalisation → SQLite (votre §7).
+Le pipeline complet : Ticketmaster → normalisation → déduplication →
+SQLite (votre §7).
 
 C'est le script "sérieux" — celui qui sera relancé régulièrement à
 l'étape 17. fetch_ticketmaster.py reste l'outil d'exploration qui a
 servi à mesurer la couverture réelle de la source ; celui-ci écrit
 vraiment dans la base.
+
+La déduplication se fait après avoir collecté TOUS les résultats, pas
+artiste par artiste : c'est ce qui permet de fusionner des doublons
+même quand rien ne garantit qu'ils sortiront l'un après l'autre — utile
+dès aujourd'hui pour les doublons internes à Ticketmaster (le cas
+ENHYPEN), indispensable le jour où une deuxième source rejoindra
+celle-ci.
 
 Utilisation, depuis la racine du projet :
     pipeline\\.venv\\Scripts\\python.exe pipeline\\collect.py
@@ -20,7 +28,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 import db
-from normalize import normalize_event
+from dedupe import deduplicate
+from normalize import NormalizedConcert, normalize_event
 from sources.ticketmaster import TicketmasterError, new_http_client, search_events
 from watchlist import WATCHLIST
 
@@ -51,13 +60,12 @@ def load_api_key() -> str:
     return api_key
 
 
-def main() -> None:
-    api_key = load_api_key()
+def collect_raw(conn, api_key: str) -> list[NormalizedConcert]:
+    """Interroge la source pour chaque artiste suivi et renvoie les
+    résultats normalisés, AVANT déduplication."""
+    normalized: list[NormalizedConcert] = []
 
-    created = updated = 0
-    errors: list[tuple[str, str]] = []
-
-    with db.connect() as conn, new_http_client() as client:
+    with new_http_client() as client:
         for index, artist in enumerate(WATCHLIST, start=1):
             artist_id = db.upsert_artist(
                 conn,
@@ -71,28 +79,42 @@ def main() -> None:
                 result = search_events(artist.name, api_key, client=client)
             except TicketmasterError as exc:
                 print(f"  [{index}/{len(WATCHLIST)}] {artist.name:<24} → erreur : {exc}")
-                errors.append((artist.name, str(exc)))
                 continue
-
-            for event in result.events:
-                concert = normalize_event(event, artist, artist_id)
-                _, was_created = db.upsert_concert(conn, concert)
-                created += was_created
-                updated += not was_created
 
             if result.events:
                 print(
                     f"  [{index}/{len(WATCHLIST)}] {artist.name:<24} "
-                    f"→ {len(result.events)} concert(s) en base"
+                    f"→ {len(result.events)} événement(s) brut(s)"
                 )
+
+            for event in result.events:
+                normalized.append(normalize_event(event, artist, artist_id))
 
             if index < len(WATCHLIST):
                 time.sleep(DELAY_BETWEEN_CALLS)
 
+    return normalized
+
+
+def main() -> None:
+    api_key = load_api_key()
+
+    with db.connect() as conn:
+        raw = collect_raw(conn, api_key)
+        deduped = deduplicate(raw)
+
+        created = updated = 0
+        for concert in deduped:
+            _, was_created = db.upsert_concert(conn, concert)
+            created += was_created
+            updated += not was_created
+
+    merged_away = len(raw) - len(deduped)
+
     print("\n" + "─" * 44)
+    print(f"{len(raw)} événement(s) brut(s) → {len(deduped)} concert(s) unique(s)", end="")
+    print(f" ({merged_away} fusionné(s))" if merged_away else "")
     print(f"{created} concert(s) ajouté(s), {updated} mis à jour.")
-    if errors:
-        print(f"{len(errors)} artiste(s) en erreur.")
     print(f"Base : {db.DB_PATH.relative_to(PROJECT_ROOT)}")
 
 
