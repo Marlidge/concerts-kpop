@@ -26,6 +26,15 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
+      - name: Générer les types de routes Next.js
+        # tsconfig.json référence des types que Next.js écrit dans
+        # .next/types/ (utilisés par PageProps, LayoutProps...). Ce
+        # dossier n'existe pas sur un dépôt fraîchement cloné — sans
+        # cette étape, la vérification de types suivante échoue ici
+        # alors qu'elle passait en local, où .next/ existait déjà
+        # grâce à un `npm run dev` ou `build` antérieur.
+        run: npx next typegen
+
       - name: Vérifier les types
         run: npx tsc --noEmit
 
